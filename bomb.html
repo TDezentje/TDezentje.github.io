@@ -263,7 +263,7 @@
 
                 if (state === "defused") {
                     if (sensor1.active && sensor2.active) {
-                        currentTimer += delta * 15;
+                        currentTimer += delta * 30;
 
                         if (previousTimer < currentTimer) {
                             beepSound.play();
