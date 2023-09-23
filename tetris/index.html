@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/tetris.css">
+    <title>Tetris</title>
+
+    <script id="fragment-shader" type="x-shader/x-fragment">
+#ifdef GL_ES
+    precision highp float;
+#endif
+
+uniform vec2 uSizePixels;
+uniform vec2 uCenterCoord;
+uniform vec3 uBlockColor;
+uniform vec3 uTransform;
+
+float roundedBoxSDF(vec2 CenterPosition, vec2 Size, float Radius)
+{
+    return length(max(abs(CenterPosition)-Size+Radius,0.0))-Radius;
+}
+
+void main() {
+    vec2 translatedPosition = vec2(uCenterCoord.x, uCenterCoord.y + (uSizePixels.y * (uTransform.y * -1.0)));
+
+    float edgeSoftness   = 1.0;
+    float radius         = uSizePixels.x * .15;
+    vec2  actualCoord = gl_FragCoord.xy - translatedPosition;
+    float distance       = roundedBoxSDF(actualCoord, uSizePixels/2.0, radius);
+    float smoothedAlpha  = 1.0 - smoothstep(-edgeSoftness, edgeSoftness, distance);
+    float borderAlpha = 1.0 - smoothstep(-edgeSoftness, edgeSoftness, abs(distance) - 5.0);
+
+    actualCoord.y = uSizePixels.y-(actualCoord.y + (uSizePixels.y/2.0));
+    actualCoord.x = actualCoord.x + (uSizePixels.x/2.0);
+
+    vec3 borderColor = uBlockColor;
+    if (actualCoord.x - actualCoord.y >= 0.0) {
+        borderColor = borderColor * 1.2;
+    } else {
+        borderColor = borderColor * 0.6;
+    }
+    vec4 borderQuadColor = mix(vec4(uBlockColor, 1), vec4(borderColor, borderAlpha), borderAlpha);
+    vec4 quadColor       = mix(vec4(0.0, 0.0, 0.0, 0.0), vec4(borderQuadColor.x, borderQuadColor.y, borderQuadColor.z, smoothedAlpha), smoothedAlpha);
+    
+    gl_FragColor = quadColor;
+}
+
+</script><script id="vertex-shader" type="x-shader/x-vertex">
+attribute vec2 aVertexPosition;
+uniform vec2 uSize;
+uniform vec3 uTransform;
+
+void main() {
+    vec2 translatedPosition = vec2(aVertexPosition.x, aVertexPosition.y - (uSize.y * uTransform.y));
+    gl_Position = vec4(translatedPosition, 0.0, 1.0);
+}
+
+</script>
+</head>
+<body>
+    <div class="view menu active">
+        <h1>TETRIS</h1>
+        <button class="start-button">Start</button>
+    </div>
+    <div class="view gameover">
+        <h1>GAME OVER</h1>
+        <button class="restart-button">Restart</button>
+    </div>
+    <div class="view game">
+        <canvas class="tetris-canvas">
+
+        </canvas>
+    </div>
+    <script src="/tetris.js"></script>
+</body>
+</html>
