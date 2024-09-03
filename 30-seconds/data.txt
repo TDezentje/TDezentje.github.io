@@ -96,7 +96,6 @@ Grip
 Riem
 Techniek
 Zwemmen
-Computers
 Tekeningen
 Verjaardag
 Kleren
@@ -170,7 +169,6 @@ Verhaal
 Schilderij
 Laptop
 Rugzak
-Apen
 Hond
 Kat
 Paard
