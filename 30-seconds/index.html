@@ -116,7 +116,7 @@
             (async () => {
                 data = await fetch('data.txt');
                 data = await data.text();
-                data = data.split('\r\n');
+                data = data.split('\n');
 
                 generateWords();
                 resetTimer();
