@@ -114,7 +114,7 @@
             let data;
 
             (async () => {
-                data = await fetch('/data.txt');
+                data = await fetch('data.txt');
                 data = await data.text();
                 data = data.split('\r\n');
 
